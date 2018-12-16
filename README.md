@@ -3,7 +3,7 @@
 Its torrent downloader with remote access to your system by using VK Bot Api
 
 steps:
-1. you send command from your remote phone/compute/etc using VK bot
+1. you send command from your phone/compute/etc using VK bot
 2. server(for example Raspberry PI media centre) execute that command
 3. server send you result
 
