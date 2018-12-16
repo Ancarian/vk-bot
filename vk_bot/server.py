@@ -8,6 +8,7 @@ from vk_bot.commands import execute
 
 
 def send(text, req, vk):
+    print(text)
     vk.messages.send(random_id=random.randint(0, 10000000), peer_id=req.object.from_id,
                      message=text)
 

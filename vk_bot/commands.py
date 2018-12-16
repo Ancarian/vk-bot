@@ -11,18 +11,6 @@ def auth():
     return qb
 
 
-def reverse(req):
-    return req.object.text[::-1]
-
-
-def upper(req):
-    return req.object.text.upper()
-
-
-def lower(req):
-    return req.object.text.lower()
-
-
 def shuffle(req):
     text = req.object.text
     return ''.join(random.sample(text, len(text)))
@@ -33,17 +21,17 @@ def allowed_commands(req):
 
 
 def test_connection(req):
-    return 'bitTorrent: {0} \ncpu usage: {1}% \n memory usage: {2}% \n disc usage: {3}%'.format(
+    return 'bitTorrent: {0} \ncpu usage: {1}% \nmemory usage: {2}% \ndisc usage: {3}%'.format(
         requests.get('http://127.0.0.1:8080/').status_code, psutil.cpu_percent(), psutil.virtual_memory()[2],
         psutil.disk_usage('.')[3])
 
 
-def get_value_in_range(l, value):
+def get_value_if_in_range(l, value):
     try:
-        value = int(value)
-        if value is None or not len(l) > value >= 0:
+        value = int(value) - 1
+        if not len(l) > value >= 0:
             return None
-        return value - 1
+        return value
     except ValueError:
         return None
 
@@ -69,7 +57,7 @@ def downloads(req):
 
 
 def pause(req):
-    value = get_value_in_range(qb.torrents(), req.object.text)
+    value = get_value_if_in_range(qb.torrents(), req.object.text)
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -88,7 +76,7 @@ def resume_all(req):
 
 
 def delete(req):
-    value = get_value_in_range(qb.torrents(), req.object.text)
+    value = get_value_if_in_range(qb.torrents(), req.object.text)
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -104,7 +92,7 @@ def pause_all_downloaded_torrents(req):
 
 
 def resume(req):
-    value = get_value_in_range(qb.torrents(), req.object.text)
+    value = get_value_if_in_range(qb.torrents(), req.object.text)
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -113,23 +101,21 @@ def resume(req):
 
 
 def execute(req):
-    c = req.object.text.split(' ')
+    c = req.object.text.split(' ', 1)
     if len(c) == 0 or c[0] not in commands:
         return "unknown command, allowed commands: {0}".format(str(', '.join([*commands])))
     elif len(c) > 1:
-        req.object.text = ' '.join(c[1:])
+        req.object.text = c[1]
+
     return commands[c[0]](req)
 
 
 commands = {
-    'reverse': reverse,
-    'upper': upper,
-    'lower': lower,
     'shuffle': shuffle,
     'commands': allowed_commands,
     'stats': test_connection,
     'download': download,
-    'downloads': downloads,
+    'torrents': downloads,
     'pause': pause,
     'pauseall': pause_all,
     'resume': resume,
