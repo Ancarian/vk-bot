@@ -1,4 +1,4 @@
+qbittorrent
 requests
 vk_api
-python-qbittorrent
 psutil
