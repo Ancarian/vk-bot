@@ -46,7 +46,7 @@ def download(req):
                 handle.write(response.content)
             with open(attachment['doc']['title'], "rb") as handle:
                 qb.download_from_file(handle)
-            return attachment['doc']['title'] + ' start download'
+    return 'download start'
 
 
 def downloads(req):
@@ -106,7 +106,6 @@ def execute(req):
         return "unknown command, allowed commands: {0}".format(str(', '.join([*commands])))
     elif len(c) > 1:
         req.object.text = c[1]
-
     return commands[c[0]](req)
 
 
@@ -120,7 +119,7 @@ commands = {
     'pauseall': pause_all,
     'resume': resume,
     'resumeall': resume_all,
-    'pausedownloaded': pause_all_downloaded_torrents
+    'pausedownloaded': pause_all_downloaded_torrents,
+    'delete': delete
 }
-
 qb = auth()
