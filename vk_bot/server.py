@@ -18,6 +18,7 @@ def exec(event, vk_api):
     text = execute(event)
     send(text, event, vk_api)
 
+
 if __name__ == '__main__':
     key = 'a7b69f837db6b8afdc1eb38ee4834739d4d97c442ec34f25fcbe00330d8b40a29e5f4a9ff0810e19d6fee'
     id = '175304786'
