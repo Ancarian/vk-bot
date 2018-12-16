@@ -1,4 +1,5 @@
 import random
+import time
 
 
 def reverse(req):
@@ -16,6 +17,11 @@ def lower(req):
 def shuffle(req):
     text = req.object.text
     return ''.join(random.sample(text, len(text)))
+
+
+def test_long_func(req):
+    time.sleep(10)
+    return 'executed'
 
 
 def is_running(req):

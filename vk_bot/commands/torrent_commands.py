@@ -1,6 +1,7 @@
 import requests
 from qbittorrent import Client
 
+
 def auth():
     qb = Client('http://127.0.0.1:8080/')
     qb.login('admin', 'adminadmin')
@@ -44,6 +45,7 @@ def delete(req):
     torrent = qb.torrents()[value]
     qb.pause(torrent['hash'])
     return torrent['name'] + ' paused'
+
 
 def pause(req):
     value = get_value_in_range(qb.torrents(), req.object.text)

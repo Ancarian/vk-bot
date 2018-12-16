@@ -1,5 +1,4 @@
-
-from vk_bot.commands.simple_commands import reverse, upper, lower, shuffle, is_running
+from vk_bot.commands.simple_commands import reverse, upper, lower, shuffle, test_long_func
 from vk_bot.commands.torrent_commands import downloads, pause, resume, download
 
 
@@ -18,7 +17,7 @@ commands = {
     'lower': lower,
     'shuffle': shuffle,
     'download': download,
-    'test': is_running,
+    'test': test_long_func,
     'downloads': downloads,
     'pause': pause,
     'resume': resume
