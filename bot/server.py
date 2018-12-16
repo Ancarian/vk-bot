@@ -1,11 +1,10 @@
 import random
 from threading import Thread
 
-from vk_api import vk_api
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
-
 from commands import auth, execute
 from request_parser import parse_vk_request
+from vk_api import vk_api
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
 
 def send(text, req, vk):
@@ -20,12 +19,16 @@ def exec(event, vk_api):
         send(text, event, vk_api)
 
 
-if __name__ == '__main__':
-    key = 'a7b69f837db6b8afdc1eb38ee4834739d4d97c442ec34f25fcbe00330d8b40a29e5f4a9ff0810e19d6fee'
-    id = '175304786'
+def parse_credentials():
+    with open('credentials.txt', 'r') as f:
+        return f.read().splitlines()
 
-    vk = vk_api.VkApi(token=key)
-    long_poll = VkBotLongPoll(vk, id)
+
+if __name__ == '__main__':
+    credentials = parse_credentials()
+    print(credentials)
+    vk = vk_api.VkApi(token=credentials[0])
+    long_poll = VkBotLongPoll(vk, credentials[1])
     vk_api = vk.get_api()
     qb = auth()
 

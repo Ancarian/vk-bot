@@ -25,8 +25,8 @@ def parse_vk_request(request):
             parsed_req['text'] = c[1]
         else:
             parsed_req['text'] = ''
+    parsed_req['attachments'] = []
     if len(request.object.attachments) != 0:
-        parsed_req['attachments'] = []
         for attachment in request.object.attachments:
             if 'doc' in attachment:
                 attach = {'type': attachment['type'], 'ext': attachment['doc']['ext'], 'link': attachment['doc']['url'],

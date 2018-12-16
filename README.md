@@ -20,6 +20,10 @@ allowed commands:
 8. pausedownloaded. Pause all downloaded torrents
 9. delete [id]. Delete torrent from torrents list and hard drive(but if torrent files not in use)
 
+credentials.txt:
+1. put in first line group api token
+2. put in second line group id
+
 requirements: 
 1. pre-installed python3.6+
 2. pre-installed qbittorrent https://www.qbittorrent.org/
