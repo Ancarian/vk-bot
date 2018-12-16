@@ -1,7 +1,7 @@
 import random
 from threading import Thread
 
-from commands import auth, execute
+from commands import execute
 from request_parser import parse_vk_request
 from vk_api import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
@@ -30,7 +30,6 @@ if __name__ == '__main__':
     vk = vk_api.VkApi(token=credentials[0])
     long_poll = VkBotLongPoll(vk, credentials[1])
     vk_api = vk.get_api()
-    qb = auth()
 
     for event in long_poll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:
