@@ -1,3 +1,4 @@
+import os
 import random
 
 import psutil
@@ -37,7 +38,7 @@ def parse_id(l, value):
 
 
 def download(req):
-    if 'attachments' not in req:
+    if len(req['attachments']) == 0:
         return 'no attachments'
     for attachment in req['attachments']:
         if attachment['type'] == 'doc' and attachment['ext'] == 'torrent':
@@ -46,6 +47,10 @@ def download(req):
                 handle.write(response.content)
             with open(attachment['title'], "rb") as handle:
                 qb.download_from_file(handle)
+    return 'download start'
+
+def download_by_magnet_link(req):
+    qb.download_from_link(req['text'])
     return 'download start'
 
 
@@ -112,6 +117,7 @@ commands = {
     'commands': allowed_commands,
     'stats': test_connection,
     'download': download,
+    'download-magnet': download_by_magnet_link,
     'torrents': downloads,
     'pause': pause,
     'pauseall': pause_all,
