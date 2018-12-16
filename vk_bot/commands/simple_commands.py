@@ -1,24 +1,22 @@
 import random
 
-from vk_bot.commands.vk_methods import send
+
+def reverse(req):
+    return req.object.text[::-1]
 
 
-def reverse(req, vk):
-    send(req.object.text[::-1], req, vk)
+def upper(req):
+    return req.object.text.upper()
 
 
-def upper(req, vk):
-    send(req.object.text.upper(), req, vk)
+def lower(req):
+    return req.object.text.lower()
 
 
-def lower(req, vk):
-    send(req.object.text.lower(), req, vk)
-
-
-def shuffle(req, vk):
+def shuffle(req):
     text = req.object.text
-    send(''.join(random.sample(text, len(text))), req, vk)
+    return ''.join(random.sample(text, len(text)))
 
 
-def is_running(req, vk):
-    send('True', req, vk)
+def is_running(req):
+    return 'True'
