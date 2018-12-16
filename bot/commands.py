@@ -4,11 +4,19 @@ import random
 import psutil
 import requests
 from qbittorrent import Client
+from qbittorrent.client import LoginRequired
 
 
-def auth():
+def get_connection():
     qb = Client('http://127.0.0.1:8080/')
-    qb.login('admin', 'adminadmin')
+
+    try:
+        # check connection. Throw exception if token expired
+        qb.torrents()
+    except LoginRequired:
+        # get new token
+        print("get new token")
+        qb.login('admin', 'adminadmin')
     return qb
 
 
@@ -22,9 +30,8 @@ def allowed_commands(req):
 
 
 def test_connection(req):
-    return 'bitTorrent: {0} \ncpu usage: {1}% \nmemory usage: {2}% \ndisc usage: {3}%'.format(
-        requests.get('http://127.0.0.1:8080/').status_code, psutil.cpu_percent(), psutil.virtual_memory()[2],
-        psutil.disk_usage('.')[3])
+    return 'cpu usage: {0}% \nmemory usage: {1}% \ndisc usage: {2}%'.format(
+        psutil.cpu_percent(), psutil.virtual_memory()[2], psutil.disk_usage('.')[3])
 
 
 def parse_id(l, value):
@@ -40,68 +47,77 @@ def parse_id(l, value):
 def download(req):
     if len(req['attachments']) == 0:
         return 'no attachments'
+    conn = get_connection()
     for attachment in req['attachments']:
         if attachment['type'] == 'doc' and attachment['ext'] == 'torrent':
             response = requests.get(attachment['link'], stream=True)
-            with open(attachment['title'], "wb") as handle:
+            filepath = '../torrents/' + attachment['title']
+            with open(filepath, "wb") as handle:
                 handle.write(response.content)
-            with open(attachment['title'], "rb") as handle:
-                qb.download_from_file(handle)
+            with open(filepath, "rb") as handle:
+                conn.download_from_file(handle)
     return 'download start'
 
+
 def download_by_magnet_link(req):
-    qb.download_from_link(req['text'])
+    get_connection().download_from_link(req['text'])
     return 'download start'
 
 
 def downloads(req):
-    if len(qb.torrents()) == 0:
+    conn = get_connection()
+    if len(conn.torrents()) == 0:
         return 'empty torrent list'
     return '\n'.join(
-        ['{0}. {1} ({2})'.format(c, value['name'], value['state']) for c, value in enumerate(qb.torrents(), 1)])
+        ['{0}. {1} ({2})'.format(c, value['name'], value['state']) for c, value in
+         enumerate(conn.torrents(), 1)])
 
 
 def pause(req):
-    value = parse_id(qb.torrents(), req['text'])
+    conn = get_connection()
+    value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect value'
-    torrent = qb.torrents()[value]
-    qb.pause(torrent['hash'])
+        return 'incorrect [id] value'
+    torrent = conn.torrents()[value]
+    conn.pause(torrent['hash'])
     return torrent['name'] + ' paused'
 
 
 def pause_all(req):
-    qb.pause_all()
+    get_connection().pause_all()
     return 'pause all'
 
 
 def resume_all(req):
-    qb.resume_all()
+    get_connection().resume_all()
     return 'resume all'
 
 
 def delete(req):
-    value = parse_id(qb.torrents(), req['text'])
+    conn = get_connection()
+    value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect value'
-    torrent = qb.torrents()[value]
-    qb.delete_permanently(torrent['hash'])
+        return 'incorrect [id] value'
+    torrent = conn.torrents()[value]
+    conn.delete_permanently(torrent['hash'])
     return torrent['name'] + ' deleted'
 
 
 def pause_all_downloaded_torrents(req):
-    torrents = qb.torrents(filter='completed')
+    conn = get_connection()
+    torrents = conn.torrents(filter='completed')
     hashes = [torrent['hash'] for torrent in torrents]
-    qb.pause_multiple(hashes)
+    conn.pause_multiple(hashes)
     return 'pause all downloaded torrents'
 
 
 def resume(req):
-    value = parse_id(qb.torrents(), req['text'])
+    conn = get_connection()
+    value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect value'
-    torrent = qb.torrents()[value]
-    qb.resume(torrent['hash'])
+        return 'incorrect [id] value'
+    torrent = conn.torrents()[value]
+    conn.resume(torrent['hash'])
     return torrent['name'] + ' resumed'
 
 
@@ -117,13 +133,20 @@ commands = {
     'commands': allowed_commands,
     'stats': test_connection,
     'download': download,
+    'd': download,
     'download-magnet': download_by_magnet_link,
+    'dm': download_by_magnet_link,
     'torrents': downloads,
     'pause': pause,
     'pauseall': pause_all,
+    'pall': pause_all,
     'resume': resume,
     'resumeall': resume_all,
+    'rall': resume_all,
     'pausedownloaded': pause_all_downloaded_torrents,
+    'pausedd': pause_all_downloaded_torrents,
     'delete': delete
 }
-qb = auth()
+
+if not os.path.isdir('../torrents'):
+    os.mkdir('../torrents')
