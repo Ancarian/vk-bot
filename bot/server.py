@@ -4,8 +4,8 @@ from threading import Thread
 from vk_api import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
-from vk_bot.commands import auth, execute
-from vk_bot.request_parser import parse_vk_request
+from commands import auth, execute
+from request_parser import parse_vk_request
 
 
 def send(text, req, vk):
