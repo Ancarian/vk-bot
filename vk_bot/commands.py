@@ -12,7 +12,7 @@ def auth():
 
 
 def shuffle(req):
-    text = req.object.text
+    text = req['text']
     return ''.join(random.sample(text, len(text)))
 
 
@@ -26,7 +26,7 @@ def test_connection(req):
         psutil.disk_usage('.')[3])
 
 
-def get_value_if_in_range(l, value):
+def parse_id(l, value):
     try:
         value = int(value) - 1
         if not len(l) > value >= 0:
@@ -37,14 +37,14 @@ def get_value_if_in_range(l, value):
 
 
 def download(req):
-    if len(req.object.attachments) == 0:
+    if 'attachments' not in req:
         return 'no attachments'
-    for attachment in req.object.attachments:
-        if attachment['type'] == 'doc' and attachment['doc']['ext'] == 'torrent':
-            response = requests.get(attachment['doc']['url'], stream=True)
-            with open(attachment['doc']['title'], "wb") as handle:
+    for attachment in req['attachments']:
+        if attachment['type'] == 'doc' and attachment['ext'] == 'torrent':
+            response = requests.get(attachment['link'], stream=True)
+            with open(attachment['title'], "wb") as handle:
                 handle.write(response.content)
-            with open(attachment['doc']['title'], "rb") as handle:
+            with open(attachment['title'], "rb") as handle:
                 qb.download_from_file(handle)
     return 'download start'
 
@@ -57,7 +57,7 @@ def downloads(req):
 
 
 def pause(req):
-    value = get_value_if_in_range(qb.torrents(), req.object.text)
+    value = parse_id(qb.torrents(), req['text'])
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -76,7 +76,7 @@ def resume_all(req):
 
 
 def delete(req):
-    value = get_value_if_in_range(qb.torrents(), req.object.text)
+    value = parse_id(qb.torrents(), req['text'])
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -92,7 +92,7 @@ def pause_all_downloaded_torrents(req):
 
 
 def resume(req):
-    value = get_value_if_in_range(qb.torrents(), req.object.text)
+    value = parse_id(qb.torrents(), req['text'])
     if value is None:
         return 'incorrect value'
     torrent = qb.torrents()[value]
@@ -101,12 +101,10 @@ def resume(req):
 
 
 def execute(req):
-    c = req.object.text.split(' ', 1)
-    if len(c) == 0 or c[0] not in commands:
+    if 'command' not in req or req['command'] not in commands:
         return "unknown command, allowed commands: {0}".format(str(', '.join([*commands])))
-    elif len(c) > 1:
-        req.object.text = c[1]
-    return commands[c[0]](req)
+
+    return commands[req['command']](req)
 
 
 commands = {
