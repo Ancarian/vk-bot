@@ -1,11 +1,10 @@
 import os
 
 from qbittorrent import Client
-from vk_api import LoginRequired
+from qbittorrent.client import LoginRequired
 
-
+qb = Client('http://127.0.0.1:8080/')
 def get_torrent_connection():
-    qb = Client('http://127.0.0.1:8080/')
     try:
         # check connection. Throw exception if token expired
         qb.torrents()
@@ -41,3 +40,5 @@ def create_incorrect_id_message(conn, req):
 def create_torrent_folder():
     if not os.path.isdir('../torrents'):
         os.mkdir('../torrents')
+
+

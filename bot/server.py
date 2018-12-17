@@ -4,9 +4,9 @@ from threading import Thread
 from vk_api import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
-from bot.commands import execute
-from bot.request_parser import parse_vk_request
-from bot.utils import parse_credentials, create_torrent_folder
+from commands import execute
+from request_parser import parse_vk_request
+from utils import parse_credentials, create_torrent_folder
 
 
 def exec(event, vk_api):
