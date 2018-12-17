@@ -4,7 +4,7 @@ from qbittorrent import Client
 from vk_api import LoginRequired
 
 
-def get_connection():
+def get_torrent_connection():
     qb = Client('http://127.0.0.1:8080/')
     try:
         # check connection. Throw exception if token expired

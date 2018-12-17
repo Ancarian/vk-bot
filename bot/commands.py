@@ -3,7 +3,7 @@ import random
 import psutil
 import requests
 
-from bot.utils import get_connection, parse_id, create_incorrect_id_message
+from bot.utils import get_torrent_connection, parse_id, create_incorrect_id_message
 
 
 def shuffle(req):
@@ -23,7 +23,7 @@ def test_connection(req):
 def download(req):
     if len(req['attachments']) == 0:
         return 'no attachments'
-    conn = get_connection()
+    conn = get_torrent_connection()
     for attachment in req['attachments']:
         if attachment['type'] == 'doc' and attachment['ext'] == 'torrent':
             response = requests.get(attachment['link'], stream=True)
@@ -36,12 +36,12 @@ def download(req):
 
 
 def download_by_magnet_link(req):
-    get_connection().download_from_link(req['text'])
+    get_torrent_connection().download_from_link(req['text'])
     return 'download start'
 
 
 def downloads(req):
-    conn = get_connection()
+    conn = get_torrent_connection()
     if len(conn.torrents()) == 0:
         return 'empty torrent list'
     return '\n'.join(
@@ -50,7 +50,7 @@ def downloads(req):
 
 
 def pause(req):
-    conn = get_connection()
+    conn = get_torrent_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
         return create_incorrect_id_message(conn, req)
@@ -60,17 +60,17 @@ def pause(req):
 
 
 def pause_all(req):
-    get_connection().pause_all()
+    get_torrent_connection().pause_all()
     return 'pause all'
 
 
 def resume_all(req):
-    get_connection().resume_all()
+    get_torrent_connection().resume_all()
     return 'resume all'
 
 
 def delete(req):
-    conn = get_connection()
+    conn = get_torrent_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
         return create_incorrect_id_message(conn, req)
@@ -80,7 +80,7 @@ def delete(req):
 
 
 def pause_all_downloaded_torrents(req):
-    conn = get_connection()
+    conn = get_torrent_connection()
     torrents = conn.torrents(filter='completed')
     hashes = [torrent['hash'] for torrent in torrents]
     conn.pause_multiple(hashes)
@@ -88,7 +88,7 @@ def pause_all_downloaded_torrents(req):
 
 
 def resume(req):
-    conn = get_connection()
+    conn = get_torrent_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
         return create_incorrect_id_message(conn, req)
@@ -100,7 +100,6 @@ def resume(req):
 def execute(req):
     if 'command' not in req or req['command'] not in commands:
         return "unknown command, allowed commands: {0}".format(str(', '.join([*commands])))
-
     return commands[req['command']](req)
 
 

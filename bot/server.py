@@ -6,7 +6,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
 from bot.commands import execute
 from bot.request_parser import parse_vk_request
-from bot.utils import parse_credentials
+from bot.utils import parse_credentials, create_torrent_folder
 
 
 def exec(event, vk_api):
@@ -22,6 +22,7 @@ if __name__ == '__main__':
     vk = vk_api.VkApi(token=credentials[0])
     long_poll = VkBotLongPoll(vk, credentials[1])
     vk_api = vk.get_api()
+    create_torrent_folder()
 
     for event in long_poll.listen():
         if event.type == VkBotEventType.MESSAGE_NEW:
