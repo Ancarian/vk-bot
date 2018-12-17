@@ -44,6 +44,13 @@ def parse_id(l, value):
         return None
 
 
+def create_incorrect_id_message(conn, req):
+    torrents_count = len(conn.torrents())
+    if torrents_count == 0:
+        return "empty torrent list"
+    return 'incorrect [id] value, for example try {0} {1}'.format(req['command'], 1)
+
+
 def download(req):
     if len(req['attachments']) == 0:
         return 'no attachments'
@@ -77,7 +84,7 @@ def pause(req):
     conn = get_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect [id] value'
+        return create_incorrect_id_message(conn, req)
     torrent = conn.torrents()[value]
     conn.pause(torrent['hash'])
     return torrent['name'] + ' paused'
@@ -97,7 +104,7 @@ def delete(req):
     conn = get_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect [id] value'
+        return create_incorrect_id_message(conn, req)
     torrent = conn.torrents()[value]
     conn.delete_permanently(torrent['hash'])
     return torrent['name'] + ' deleted'
@@ -115,7 +122,7 @@ def resume(req):
     conn = get_connection()
     value = parse_id(conn.torrents(), req['text'])
     if value is None:
-        return 'incorrect [id] value'
+        return create_incorrect_id_message(conn, req)
     torrent = conn.torrents()[value]
     conn.resume(torrent['hash'])
     return torrent['name'] + ' resumed'
