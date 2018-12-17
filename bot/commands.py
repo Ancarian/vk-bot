@@ -1,23 +1,9 @@
-import os
 import random
 
 import psutil
 import requests
-from qbittorrent import Client
-from qbittorrent.client import LoginRequired
 
-
-def get_connection():
-    qb = Client('http://127.0.0.1:8080/')
-
-    try:
-        # check connection. Throw exception if token expired
-        qb.torrents()
-    except LoginRequired:
-        # get new token
-        print("get new token")
-        qb.login('admin', 'adminadmin')
-    return qb
+from bot.util import get_connection, parse_id, create_incorrect_id_message
 
 
 def shuffle(req):
@@ -32,23 +18,6 @@ def allowed_commands(req):
 def test_connection(req):
     return 'cpu usage: {0}% \nmemory usage: {1}% \ndisc usage: {2}%'.format(
         psutil.cpu_percent(), psutil.virtual_memory()[2], psutil.disk_usage('.')[3])
-
-
-def parse_id(l, value):
-    try:
-        value = int(value) - 1
-        if not len(l) > value >= 0:
-            return None
-        return value
-    except ValueError:
-        return None
-
-
-def create_incorrect_id_message(conn, req):
-    torrents_count = len(conn.torrents())
-    if torrents_count == 0:
-        return "empty torrent list"
-    return 'incorrect [id] value, for example try {0} {1}'.format(req['command'], 1)
 
 
 def download(req):
@@ -154,6 +123,3 @@ commands = {
     'pausedd': pause_all_downloaded_torrents,
     'delete': delete
 }
-
-if not os.path.isdir('../torrents'):
-    os.mkdir('../torrents')
