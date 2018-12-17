@@ -6,7 +6,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
 from bot.commands import execute
 from bot.request_parser import parse_vk_request
-from bot.util import parse_credentials
+from bot.utils import parse_credentials
 
 
 def exec(event, vk_api):

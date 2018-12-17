@@ -3,7 +3,7 @@ import random
 import psutil
 import requests
 
-from bot.util import get_connection, parse_id, create_incorrect_id_message
+from bot.utils import get_connection, parse_id, create_incorrect_id_message
 
 
 def shuffle(req):
